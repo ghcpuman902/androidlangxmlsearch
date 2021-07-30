@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:title="@string/other_sound_settings"
+        android:key="audio_input_settings"
+        xmlns:settings="http://schemas.android.com/apk/res/com.android.settings">
+
+    <!-- AUDIO_DEVICE_IN_BUILTIN_MIC       是内置耳麦     0
+		 AUDIO_DEVICE_IN_WIRED_HEADSET 是外置耳麦     1
+		 AUDIO_DEVICE_IN_BLUETOOTH_SCO_HEADSET 蓝牙耳麦     2  -->  
+        <CheckBoxPreference 
+			android:key="audio_builtin_mic"
+            android:title="@string/audio_builtin_mic"
+             />
+        <CheckBoxPreference 
+			android:key="audio_wired_headset"
+            android:title="@string/audio_wired_headset"
+             />
+        <CheckBoxPreference 
+			android:key="audio_bluetooth_sco_headset"
+            android:title="@string/audio_bluetooth_sco_headset"
+             />       
+
+</PreferenceScreen>

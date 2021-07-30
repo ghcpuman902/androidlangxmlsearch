@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- should show the hidebar button default -->
+    <bool name="def_hidebar_button_show">true</bool>
+    <!-- always hide statusbar -->
+    <bool name="def_always_hide_bar">false</bool>
+
+    <!--if true while show rotation in SystenUI and Settings-DisplaySettings -->
+    <bool name="def_enable_rotation_by_user">true</bool>
+</resources>

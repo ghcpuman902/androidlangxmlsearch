@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="svoxlangpack6">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/external/svox/picolanginstaller/res/raw/svoxlangpack.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
