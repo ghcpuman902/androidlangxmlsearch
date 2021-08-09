@@ -742,16 +742,11 @@ const convToMB = (numInB) => {
 class Popup extends React.PureComponent{
   render() {
     return (
-      <div className='popup' onClick={this.props.closePopup}>
+      <div className='popup' onClick={this.props.closePopup}> {/* Let SearchBar handle closePopup */}
         <div className='popup_inner'>
-          <h1>{this.props.text}</h1>
+          <h1>{this.props.title}</h1>
           <div>
-            <h3>使用說明</h3>
-            <p>
-            先選擇想要搜索的語言，預設為台灣繁體中文 zh-rTW，再輸入搜索關鍵字進行搜索。<br /><br />
-            關鍵詞搜索時只會顯示那種語言的預覽，加上5種英文變體和3種中文變體的預覽。<br /><br />
-            複製MsgID後用MsgID重新搜索會出現所有語言的預覽。<br /><br />
-            </p>
+            {this.props.children}
           </div>
         <button onClick={this.props.closePopup}>CLOSE</button>
         </div>
@@ -760,9 +755,42 @@ class Popup extends React.PureComponent{
   }
 }
 
+class Card extends React.PureComponent {
+  constructor(props) {
+    super(props);
+  }
+
+  render (){
+    let {cardTitle, MsgName, MsgID, Default, translationAsArray, AppName} = this.props;
+    return (
+      <li className="card">
+        <div className="card-content">
+          <h2>{cardTitle}</h2>
+          <div>
+            <div className="MsgName">MsgName: {MsgName}</div>
+            <div className="MsgID">MsgID: {MsgID}</div>
+            {Default != ""&&(<div className="Default">DefaultName: {Default}</div>)}
+            <table className="Translations">
+              <tbody>
+                {translationAsArray.map( translation => {
+                  return (
+                    <tr key={translation[0]}><td>{translation[0]}</td><td>{translation[1]}</td></tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <div className="AppName">AppName: {AppName}</div>
+          </div>
+        </div>
+      </li>
+    );
+  }
+}
+
 class SearchBar extends React.PureComponent {
   constructor(props){
     super(props);
+
     this.state = {
       showPopup: false
     };
@@ -770,6 +798,7 @@ class SearchBar extends React.PureComponent {
   }
 
   handleChange(e){
+    // handle change for searchValue & languageCodeValue
     this.props.onSearchBarChange(e);
     //Pass to App to deal with the change
   }
@@ -805,10 +834,14 @@ class SearchBar extends React.PureComponent {
         <button onClick={this.togglePopup.bind(this)}>Help</button>
 
         {this.state.showPopup ? 
-          (<Popup
-            text='Help'
-            closePopup={this.togglePopup.bind(this)}
-          />)
+          (<Popup title='Help' closePopup={this.togglePopup.bind(this)}>
+            <h3>使用說明</h3>
+            <p>
+            先選擇想要搜索的語言，預設為台灣繁體中文 zh-rTW，再輸入搜索關鍵字進行搜索。<br /><br />
+            關鍵詞搜索時只會顯示那種語言的預覽，加上5種英文變體和3種中文變體的預覽。<br /><br />
+            複製MsgID後用MsgID重新搜索會出現所有語言的預覽。<br /><br />
+            </p>
+          </Popup>)
           : null
         }
       </div>
@@ -816,43 +849,10 @@ class SearchBar extends React.PureComponent {
   }
 }
 
-class Card extends React.PureComponent {
-  constructor(props) {
-    super(props);
-  }
-
-  render (){
-
-    let {cardTitle, MsgName, MsgID, Default, translationAsArray, AppName} = this.props;
-    return (
-      <li className="card">
-        <div className="card-content">
-          <h2>{cardTitle}</h2>
-          <div>
-            <div className="MsgName">MsgName: {MsgName}</div>
-            <div className="MsgID">MsgID: {MsgID}</div>
-            {Default != ""&&(<div className="Default">DefaultName: {Default}</div>)}
-            <table className="Translations">
-              <tbody>
-                {translationAsArray.map( translation => {
-                  return (
-                    <tr key={translation[0]}><td>{translation[0]}</td><td>{translation[1]}</td></tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            <div className="AppName">AppName: {AppName}</div>
-          </div>
-        </div>
-      </li>
-    );
-  }
-}
 
 class App extends React.Component {
   constructor(props){
     super(props);
-    this.scrollContainer = React.createRef()
 
     this.state = {
       fetchingError: null,
@@ -879,23 +879,29 @@ class App extends React.Component {
 
     };
 
+
+    this.scrollContainer = React.createRef()
+    // Prepare reference for monitoring scroll and implement infinite scroll
+
     this.items = [];
     this.toBeRendered = null;
     this.totalNumOfItemDisplayed = null;
+    // For function component better to use useRef, doesn't matter for class component
 
     this.handleSearchBarChange = this.handleSearchBarChange.bind(this);
     this.generateToBeRendered = this.generateToBeRendered.bind(this);
     this.handleScroll = this.handleScroll.bind(this);
-    // this.updateRenderRange = this.updateRenderRange.bind(this);
   } 
 
 
   componentDidMount() {
-    //Fetching Data
     {
-      const self = this; // Provide "this" binding, from https://www.npmjs.com/package/fetch-progress
+      // Fetching Data
+
+      const self = this; // Provide "this" binding, doesn not work otherwise. from https://www.npmjs.com/package/fetch-progress
       fetch("./androidMsgs.json")
       .then(
+        // Using 3rd party solution to get fetch progress
         fetchProgress({
           onProgress(progress) {
             console.log(progress);
@@ -908,9 +914,11 @@ class App extends React.Component {
       )
       .then(res => res.json())
       .then(
+        // Using 3rd party solution to get fetch progress
         (result) => {
           let items = [];
           for (const [key, value] of Object.entries(result)) {
+            // Looping through object
             items.push([key,value]);
           }
           this.items = items;
@@ -919,9 +927,6 @@ class App extends React.Component {
           });
           this.generateToBeRendered();
         },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
         (error) => {
           this.setState({
             isFetched: true,
@@ -931,12 +936,13 @@ class App extends React.Component {
       );
     };
 
-    //Add event listener
-    window.addEventListener('scroll', this.handleScroll, {passive: true});
+    // Add event listener
+    window.addEventListener('scroll', this.handleScroll, {passive: true}); // passive for performance boots, telling browser this action does not prevent defaut scrolling
 
   }
 
   componentWillUnmount = () => {
+    // Remove event listener when not needed
     window.removeEventListener('scroll', this.handleScroll);
   }
 
@@ -975,6 +981,10 @@ class App extends React.Component {
         }, () => {
           console.log("Tried calling generateToBeRendered");
           setTimeout(this.generateToBeRendered,1);
+          // Use setTimeout to make sure generateToBeRendered happens after 
+          // everything in the queued messages in Javascript Event Loop 
+          // are completed.
+          // This make sure result are rendered right after searchbar changes value
         });
         break;
       default:
@@ -984,16 +994,18 @@ class App extends React.Component {
 
   handleScroll = (e) => {
     if(this.scrollContainer.current.getBoundingClientRect().bottom - 20 <= window.innerHeight){
-      // Add  20 to offset for the 0.5em margin 
+      // Add  20 to offset for the 0.5em margin on top
+      // If scrolled to bottom
       console.log(`BOTTOM`);
       this.updateRenderRange(1);
     }
   }
 
-
-
   generateToBeRendered = async () => {
-    //async to prevent from blocking, actually really fast
+    // Generate jsx element to be rendered, does not interact with the DOM
+    // async to prevent from blocking main thread, actually really fast for 2 million items
+    // it's the rendering that's slow, hence the infinite scroll
+
 
     this.setState((prevState) => {
 
@@ -1010,25 +1022,22 @@ class App extends React.Component {
           const [MsgID, {AppName, MsgName, Default, Translations}] = val;
           //deconstruction
 
-
-
           if(/^\d+$/.test(searchValue) && (searchValue+"").length>16 && MsgID == searchValue){
             // In the case of MsgID (is number && is longer than 16 digit && MsgID matching)
-            numOfItemDisplayed += 1;
 
+            numOfItemDisplayed += 1
             let translationAsArray = [];
             for (const [key, value] of Object.entries(Translations)) {
               translationAsArray.push([key,value]);
             }
-
             cards.push(
               <Card key={MsgID} MsgID={MsgID} cardTitle={MsgID} MsgName={MsgName} Default={Default} translationAsArray={translationAsArray} AppName={AppName}></Card>
             );
 
           }else if(searchValue.trim().length > 0 && Translations[filterLanguageCode] && Translations[filterLanguageCode].indexOf(searchValue) >= 0){
             // In the case of normal search (not empty search && language code exit in current item && translation contains search value && total number < 2000)
-            numOfItemDisplayed += 1;
-            
+
+            numOfItemDisplayed += 1;            
             let translationAsArray = [
               ["en-rAU",Translations['en-rAU']],
               ["en-rGB",Translations['en-rGB']],
@@ -1039,9 +1048,8 @@ class App extends React.Component {
               ["zh-rTW",Translations['zh-rTW']],
               ["zh-rHK",Translations['zh-rHK']]
             ];
-
-            if(numOfItemDisplayed <= prevState.renderRangeH ){
-              // if(numOfItemDisplayed > prevState.renderRangeL && numOfItemDisplayed <= prevState.renderRangeH ){
+            if(numOfItemDisplayed <= prevState.renderRangeH ){ 
+              // For the infinite scroll, only display desired range
               cards.push(
                 <Card key={MsgID} MsgID={MsgID} cardTitle={Translations[filterLanguageCode]} MsgName={MsgName} Default={Default} translationAsArray={translationAsArray} AppName={AppName}></Card>
               );
@@ -1060,7 +1068,7 @@ class App extends React.Component {
         console.log("generateToBeRendered End");
         
       if(numOfItemDisplayed > 0){
-        //prevent update of UI when typing, otherwise page will go blank
+        // Prevent page from going blank, show previous result instead. 
         this.totalNumOfItemDisplayed = numOfItemDisplayed;
         this.toBeRendered = toBeRendered;
       }
@@ -1073,18 +1081,29 @@ class App extends React.Component {
 
 
   updateRenderRange = (direction = 1) => {
+    // direction = 1 -> scrolled to bottom, insert to bottom
+    // direction = -1 -> scrolled to top, insert to top
+    // Insert to top caused bad user experience while contributing negligible improvement to the performance,
+    // so it is removed
+
     this.setState((prevState) => {
+      // Scroll to top legacy:
       // let newRangeL = prevState.renderRangeL + direction*renderSize, 
       // let newRangeL = prevState.renderRangeL, 
+      ///////////////
       let newRangeH = prevState.renderRangeH + direction*renderSize;
       if(newRangeH > this.totalNumOfItemDisplayed){
+        // Scroll to top legacy:
         // if(newRangeL<0 || newRangeH > this.totalNumOfItemDisplayed){
-        console.log( `DISQUALIFIED`);
+        ///////////////
+        console.log( `End of item list, not updating range`);
           return ({})
       }
-      console.log( `TRIGGERED`);
+      console.log( `Updating range`);
       return ({
+        // Scroll to top legacy:
         // renderRangeL: newRangeL,
+        ///////////////
         renderRangeH: newRangeH
       });
     });
@@ -1100,18 +1119,18 @@ class App extends React.Component {
     } else if (!isFetched) {
       // fetching...
       return (
-      <div className="loading-text">
-        <div>這台設備第一次使用，</div>
-        <div>下載詞典中({ convToMB(this.state.progress.transferred)}/{ convToMB(63493050) })</div>
-        <div>預計時間：{ Math.round( (63493050-this.state.progress.transferred)/this.state.progress.speed )}s</div>
-        <div>瀏覽器緩存後刷新也毋須重複下載。</div>
-        <h3>使用說明</h3>
-        <p>
-        先選擇想要搜索的語言，預設為台灣繁體中文 zh-rTW，再輸入搜索關鍵字進行搜索。<br /><br />
-        關鍵詞搜索時只會顯示那種語言的預覽，加上5種英文變體和3種中文變體的預覽。<br /><br />
-        複製MsgID後用MsgID重新搜索會出現所有語言的預覽。<br /><br />
-        </p>
-      </div>
+        <div className="loading-text">
+          <div>這台設備第一次使用，</div>
+          <div>下載詞典中({ convToMB(this.state.progress.transferred)}/{ convToMB(63493050) })</div>
+          <div>預計時間：{ Math.round( (63493050-this.state.progress.transferred)/this.state.progress.speed )}s</div>
+          <div>瀏覽器緩存後刷新也毋須重複下載。</div>
+          <h3>使用說明</h3>
+          <p>
+          先選擇想要搜索的語言，預設為台灣繁體中文 zh-rTW，再輸入搜索關鍵字進行搜索。<br /><br />
+          關鍵詞搜索時只會顯示那種語言的預覽，加上5種英文變體和3種中文變體的預覽。<br /><br />
+          複製MsgID後用MsgID重新搜索會出現所有語言的預覽。<br /><br />
+          </p>
+        </div>
       );
     }
 

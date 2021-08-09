@@ -69,7 +69,7 @@ li{
 
 .search-bar{
   width: calc(100% - 1em);
-  background-color: #fafafa;
+  background-color: white;
   padding: 10px;
   text-align: center;
   box-sizing: border-box;
