@@ -1,0 +1,17 @@
+{
+    "ThisIsFirstUse": "This device is being used for the first time,",
+    "DownloadingDic": "Downloading dictionary",
+    "ETA": "Estimated time:",
+    "OnlyDlOnce": "No need to re-download even if the browser is refreshed after caching.",
+    "Purpose": "Purpose",
+    "PurposeLine1": "Android XML Search provides translation references for App developers by searching all system wording translations built into Android OS.",
+    "HowToUse":"How to Use",
+    "HowToUseLine1":"First select the language you want to search, default is Taiwanese Traditional Chinese zh-rTW, then enter the search keyword.",
+    "HowToUseLine2":"Keyword searches will only show a preview of that language, plus previews of five English variants and three Chinese variants.",
+    "HowToUseLine3":"After copying the MsgID, re-searching with the MsgID will display a preview in all languages.",
+    "Rendering":"Browser rendering, please wait...",
+    "KeywordOrMsgID":"Keyword or MsgID:",
+    "ChooseLanguageCode":"Choose LanguageCode:",
+    "Help":"Help",
+    "nResults":" results"
+}

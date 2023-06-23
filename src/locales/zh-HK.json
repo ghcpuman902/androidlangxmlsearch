@@ -1,0 +1,17 @@
+{
+    "ThisIsFirstUse": "這部裝置第一次使用，",
+    "DownloadingDic": "下載詞典中",
+    "ETA": "預計時間：",
+    "OnlyDlOnce":"瀏覽器緩存後刷新亦無需重新下載。",
+    "Purpose":"用途",
+    "PurposeLine1":"Android XML 搜索通過搜索Android OS自帶的所有系統詞彙翻譯來提供App開發者翻譯用詞的參考。",
+    "HowToUse":"使用說明",
+    "HowToUseLine1":"首先選擇想要搜索的語言，預設為台灣繁體中文 zh-rTW，然後輸入搜索關鍵字進行搜索。",
+    "HowToUseLine2":"關鍵詞搜索時只會顯示該語言的預覽，加上5種英文變體和3種中文變體的預覽。",
+    "HowToUseLine3":"複製MsgID後用MsgID重新搜索會出現所有語言的預覽。",
+    "Rendering":"瀏覽器渲染中，請稍候...",
+    "KeywordOrMsgID":"關鍵字或MsgID：",
+    "ChooseLanguageCode":"選擇搜索語言：",
+    "Help":"幫助",
+    "nResults":"個結果"
+}

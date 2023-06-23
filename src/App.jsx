@@ -1,6 +1,8 @@
 import React from 'react';
 import fetchProgress from 'fetch-progress';
 import './App.css';
+import { useIntl } from 'react-intl';
+
 
 
 const languageCodes = [
@@ -810,18 +812,19 @@ class SearchBar extends React.PureComponent {
   }
 
   render() {
+    const { intl } = this.props; 
     const searchValue = this.props.searchValue;
     const filterLanguageCode = this.props.filterLanguageCode;
     return (
       <div className="search-bar">
         <h3>Android Translations XML search</h3>
         <label  className="search-field">
-         Keyword or MsgID：
+        {intl.formatMessage({ id:'KeywordOrMsgID'})}
           <input name="searchValue" type="text" value={searchValue} onChange={this.handleChange} />
         </label>
 
         <label  className="language-code-select">
-          Choose LanguageCode：
+        {intl.formatMessage({ id:'ChooseLanguageCode'})}
           <select name="languageCodeValue" value={filterLanguageCode} onChange={this.handleChange}>
             {languageCodes.map((languageCode => {
               return (
@@ -831,15 +834,19 @@ class SearchBar extends React.PureComponent {
           </select>
         </label>
 
-        <button onClick={this.togglePopup.bind(this)}>Help</button>
+        <button onClick={this.togglePopup.bind(this)}>{intl.formatMessage({ id:'Help'})}</button>
 
         {this.state.showPopup ? 
           (<Popup title='Help' closePopup={this.togglePopup.bind(this)}>
-            <h3>使用說明</h3>
+            <h3>{intl.formatMessage({ id:'Purpose'})}</h3>
             <p>
-            先選擇想要搜索的語言，預設為台灣繁體中文 zh-rTW，再輸入搜索關鍵字進行搜索。<br /><br />
-            關鍵詞搜索時只會顯示那種語言的預覽，加上5種英文變體和3種中文變體的預覽。<br /><br />
-            複製MsgID後用MsgID重新搜索會出現所有語言的預覽。<br /><br />
+            {intl.formatMessage({ id:'PurposeLine1'})}<br /><br />
+            </p>
+            <h3>{intl.formatMessage({ id:'HowToUse'})}</h3>
+            <p>
+            {intl.formatMessage({ id:'HowToUseLine1'})}<br /><br />
+            {intl.formatMessage({ id:'HowToUseLine2'})}<br /><br />
+            {intl.formatMessage({ id:'HowToUseLine3'})}<br /><br />
             </p>
           </Popup>)
           : null
@@ -1002,6 +1009,7 @@ class App extends React.Component {
   }
 
   generateToBeRendered = async () => {
+    const { intl } = this.props; 
     // Generate jsx element to be rendered, does not interact with the DOM
     // async to prevent from blocking main thread, actually really fast for 2 million items
     // it's the rendering that's slow, hence the infinite scroll
@@ -1061,7 +1069,7 @@ class App extends React.Component {
         let toBeRendered = (
           <ul className="list-view cards">
               {cards}
-            <div className="num-of-item-displayed">{numOfItemDisplayed}個結果</div>
+            <div className="num-of-item-displayed">{numOfItemDisplayed}{intl.formatMessage({ id:'nResults'})}</div>
           </ul>
         );
 
@@ -1111,7 +1119,8 @@ class App extends React.Component {
     return;
   }
 
-  render() {   
+  render() {  
+    const { intl } = this.props; 
     const { fetchingError, isFetched } = this.state;
     if (fetchingError) {
       // fecthing error
@@ -1120,15 +1129,19 @@ class App extends React.Component {
       // fetching...
       return (
         <div className="loading-text">
-          <div>這台設備第一次使用，</div>
-          <div>下載詞典中({ convToMB(this.state.progress.transferred)}/{ convToMB(63493050) })</div>
-          <div>預計時間：{ Math.round( (63493050-this.state.progress.transferred)/this.state.progress.speed )}s</div>
-          <div>瀏覽器緩存後刷新也毋須重複下載。</div>
-          <h3>使用說明</h3>
+          <div>{intl.formatMessage({ id:'ThisIsFirstUse'})}</div>
+          <div>{intl.formatMessage({ id:'DownloadingDic'})}({ convToMB(this.state.progress.transferred)}/{ convToMB(63493050) })</div>
+          <div>{intl.formatMessage({ id:'ETA'})}{ Math.round( (63493050-this.state.progress.transferred)/this.state.progress.speed )}s</div>
+          <div>{intl.formatMessage({ id:'OnlyDlOnce'})}</div>
+          <h3>{intl.formatMessage({ id:'Purpose'})}</h3>
           <p>
-          先選擇想要搜索的語言，預設為台灣繁體中文 zh-rTW，再輸入搜索關鍵字進行搜索。<br /><br />
-          關鍵詞搜索時只會顯示那種語言的預覽，加上5種英文變體和3種中文變體的預覽。<br /><br />
-          複製MsgID後用MsgID重新搜索會出現所有語言的預覽。<br /><br />
+          {intl.formatMessage({ id:'PurposeLine1'})}<br /><br />
+          </p>
+          <h3>{intl.formatMessage({ id:'HowToUse'})}</h3>
+          <p>
+          {intl.formatMessage({ id:'HowToUseLine1'})}<br /><br />
+          {intl.formatMessage({ id:'HowToUseLine2'})}<br /><br />
+          {intl.formatMessage({ id:'HowToUseLine3'})}<br /><br />
           </p>
         </div>
       );
@@ -1137,12 +1150,12 @@ class App extends React.Component {
     // fetched.
     return (
       <div className="App">
-        <SearchBar onSearchBarChange={this.handleSearchBarChange}  filterLanguageCode={this.state.filterlanguageCode} searchValue={this.state.searchValue}></SearchBar>
+        <SearchBar onSearchBarChange={this.handleSearchBarChange}  filterLanguageCode={this.state.filterlanguageCode} searchValue={this.state.searchValue} intl={intl}></SearchBar>
         {this.state.isResultLoading && 
         (
           <div className="popup">
             <div className="popup_inner">
-              瀏覽器渲染中，請稍候...<br /><br />
+              {intl.formatMessage({ id:'Rendering'})}<br /><br />
             </div>
           </div>
         )}
